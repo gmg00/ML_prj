@@ -1,0 +1,10 @@
+DA FARE:
+- Continuare EDA
+- Funzione per acquisire dataset
+- Data preprocessingù
+- Creare modello:
+    - Input Layer, Hidden Layer e Output Layer
+    - Calcolo gradiente pesi e backpropragation 
+    - Algoritmo di training
+    - Algoritmo di prediction
+- Visualizzazione dei risultati
