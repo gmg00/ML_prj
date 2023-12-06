@@ -1,7 +1,7 @@
 DA FARE:
 - Continuare EDA
 - Funzione per acquisire dataset
-- Data preprocessingù
+- Data preprocessing
 - Creare modello:
     - Input Layer, Hidden Layer e Output Layer
     - Calcolo gradiente pesi e backpropragation 
