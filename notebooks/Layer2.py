@@ -105,6 +105,8 @@ class Layer:
     def __init__(self, prev_layer, dim_layer, act_function):
   
         self.prev_layer = prev_layer
+        #self.next_layer = None
+        #self.target = target
         self.init_params(dim_layer, act_function) #self.init_params(dim_layer, act_function, input)
 
     def init_params(self, dim_layer, act_function):
@@ -123,26 +125,32 @@ class Layer:
         if mode == 'train':
             self.z = self.W.dot(self.prev_layer.forward()) + self.b
             self.layer = self.act_function(self.z)
-
+            print(f'layer = {self.layer.shape}')
             return self.layer
         elif mode == 'predict':
             return self.act_function(self.W.dot(self.prev_layer.forward(mode = 'predict')) + self.b)
         
     
     def backward(self, next_delta = None, next_weights = None, lossfunc = None, last = False):
+        #print(f'Entered backward: target = {self.target}')
         
         if last == True:
 
+            #print('self.target != None: output')
+            #print(self.d_act_function(self.z).shape)
+            #print(lossfunc(self.layer,self.target).shape)
+            #print(self.layer.shape)
+            #print(self.target.shape)
             delta = self.d_act_function(self.z) * lossfunc(self.layer,self.target)
-
+            #self.prev_layer.backward(delta,self.weights)
             self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer 
            
         else:
-
+            #print('self.target == None: hidden')
             delta = self.d_act_function(self.z) * next_weights.T.dot(next_delta)
-
+            #self.prev_layer.backward(delta,self.weights)
             self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer
@@ -165,18 +173,19 @@ class Layer:
         return (np.sqrt((self.layer[i]-self.target[i])**2)/self.target[i]).mean()
     
 class Input(Layer):
-
+    static_var = 0
     def __init__(self, input_dim):
-
+        Input.static_var += 1
+        self.instance_var = Input.static_var
         Layer.__init__(self, None, input_dim, 'lin')
 
     def init_params(self, dim_layer, act_function):
         self.layer = None
-
+        #self.dim_batch = input.shape[1]
         self.dim_layer = dim_layer
 
     def forward(self, mode = 'train'):
-
+        #print(self.layer.shape)
         return self.layer
     
     def backward(self, next_delta = None, next_weights = None):
@@ -184,10 +193,12 @@ class Input(Layer):
     
     def update_weights(self, eta, lam):
         return self.layer
+    
+    def prova(self):
+        return self.dim_layer
         
 lossfunc = {'MSE':(MSE,d_MSE),
             'binary_crossentropy':(binary_crossentropy,d_binary_crossentropy)}
-
         
 if __name__ == '__main__':
 
@@ -222,7 +233,9 @@ if __name__ == '__main__':
         err1.append(output_layer.rel_err_i(0))
         err2.append(output_layer.rel_err_i(1))
         err3.append(output_layer.rel_err_i(2))
-        output_layer.backward(lossfunc = d_MSE, last=True)
+        print(output_layer.layer)
+        print(output_layer.target)
+        output_layer.backward(lossfunc = d_binary_crossentropy, last=True)
         output_layer.update_weights(eta, lam)
         if o % 100 == 0: print(o)
 
