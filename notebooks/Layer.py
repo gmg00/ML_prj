@@ -1,104 +1,6 @@
 import numpy as np
-from matplotlib import pyplot as plt
-import torch
-import pandas as pd
-import math
-
-
-
-
-
-#linear activation function 
-def linear(x):
-    """_summary_
-
-    Args:
-        x (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """    
-    return x
-
-def d_linear(x):
-    """_summary_
-
-    Args:
-        x (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """    
-    return 1
-
-#sigmoid activation function
-def sigmoid(x):
-    """_summary_
-
-    Args:
-        x (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """    
-    return 1/(1+np.exp(-x))
-
-def d_sigmoid(x):
-    """_summary_
-
-    Args:
-        x (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """    
-    f =sigmoid(x)
-    return f * (1-f)
-
-#ReLu activation function
-def relu(x):
-    if x > 0: return x
-    else: return 0
-
-def d_relu(x):
-    if x > 0: return 1
-    else: return 0
-    
-
-#hyperbolic tangent activation function
-def TanH(x):
-    return np.tanh(x)
-
-def d_TanH(x):
-    return 1 - math.pow(np.tanh(x), 2) 
-
-#Dictionary for the activation functions
-act_func = {
-    'lin': linear,
-    'sigm': sigmoid,
-    'relu': relu,
-    'tanh': TanH
-}
-
-#A second dictionary for their derivatives
-d_act_func = {
-    'lin': d_linear,
-    'sigm': d_sigmoid,
-    'relu': d_relu,
-    'tanh': d_TanH
-}
-
-def d_MSE(layer, target):
-    return 2*(layer - target)/target.shape[1]
-
-def MSE(layer, target):
-    return (layer - target)**2/target.shape[1]
-
-def binary_crossentropy(layer, target):
-    return - (target * np.log(layer) + (1 - target) * np.log(1 - layer))/target.shape[1]
-
-def d_binary_crossentropy(layer, target):
-    return (layer - target)/(layer*(1-layer)*target.shape[1])
+from functions import act_func, d_act_func
+from Optimizer import Optimizer
 
 class Layer:
 
@@ -117,7 +19,9 @@ class Layer:
         self.target = None
         self.act_function = np.vectorize(act_func[act_function])
         self.d_act_function = np.vectorize(d_act_func[act_function])
-        
+        self.opt = Optimizer(self.dim_layer, self.prev_layer.dim_layer)
+        self.eta = 0
+    
 
     def forward(self, mode = 'train'):
         if mode == 'train':
@@ -147,22 +51,19 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer
 
-    def update_weights(self, eta, lam):
+    def update_weights(self, eta, lam = 0, use_opt = 1):
 
-        self.W = self.W - eta * self.d_W - lam * self.W
-        self.prev_layer.update_weights(eta, lam)
+        if self.eta != eta:
+            self.eta = eta
+            self.opt.update_eta(self.eta)
 
-    def err(self):
-        return np.sqrt((self.layer[0]-self.target[0])**2+(self.layer[1]-self.target[1])**2+(self.layer[2]-self.target[2])**2).mean()
-    
-    def rel_err(self):
-        return np.sqrt((self.layer[0]-self.target[0])**2/self.target[0]**2+(self.layer[1]-self.target[1])**2/self.target[1]**2+(self.layer[2]-self.target[2])**2/self.target[2]**2).mean()
+        if use_opt == 1:
+            self.W, self.b = self.opt.update(self.W, self.b, self.d_W, self.d_b, lam)
+        else:
+            self.W = self.W - eta*self.d_W - lam * self.W
+            self.b = self.b - eta*self.d_b - lam * self.b
 
-    def err_i(self,i):
-        return np.sqrt((self.layer[i]-self.target[i])**2).mean()
-    
-    def rel_err_i(self,i):
-        return (np.sqrt((self.layer[i]-self.target[i])**2)/self.target[i]).mean()
+        self.prev_layer.update_weights(eta)
     
 class Input(Layer):
 
@@ -182,56 +83,9 @@ class Input(Layer):
     def backward(self, next_delta = None, next_weights = None):
         return self.layer
     
-    def update_weights(self, eta, lam):
+    def update_weights(self, lam):
         return self.layer
+    
+    def prova(self):
+        return self.dim_layer
         
-lossfunc = {'MSE':(MSE,d_MSE),
-            'binary_crossentropy':(binary_crossentropy,d_binary_crossentropy)}
-
-        
-if __name__ == '__main__':
-
-    names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
-         'feature_7', 'feature_8', 'feature_9', 'feature_10', 'target_x', 'target_y','target_z']
-
-    df = pd.read_csv("/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/ML-CUP23-TR.csv", names=names, comment='#')
-
-    targets = ['target_x', 'target_y', 'target_z']
-    features = list(set(names) - {'id', 'target_x', 'target_y', 'target_z'})
-    prova = df[0:1000]
-    X_train, y = prova[features].to_numpy().T, prova[targets].to_numpy().T
-
-    eta = 0.01
-    lam = 0.00
-    o = 0
-    E1 = []
-    E2 = []
-    E3 = []
-    E = []
-    dim_batch = 100
-    input_layer = Input(10)
-    hidden_layer = Layer(input_layer, 8, 'relu')
-    output_layer = Layer(hidden_layer, 3, 'lin')
-    while o<1000:
-        err1 = []
-        err2 = []
-        err3 = []
-        input_layer.layer = X_train
-        output_layer.target = y
-        output_layer.forward()
-        err1.append(output_layer.rel_err_i(0))
-        err2.append(output_layer.rel_err_i(1))
-        err3.append(output_layer.rel_err_i(2))
-        output_layer.backward(lossfunc = d_MSE, last=True)
-        output_layer.update_weights(eta, lam)
-        if o % 100 == 0: print(o)
-
-        E1.append(np.array(err1).mean())
-        E2.append(np.array(err2).mean())
-        E3.append(np.array(err3).mean())
-        E.append(output_layer.err())
-        o += 1
-
-    print(np.array(E).shape)
-    plt.plot(E)
-    plt.show()
