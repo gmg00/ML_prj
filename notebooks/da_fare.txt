@@ -10,3 +10,4 @@ DA FARE:
 - Visualizzazione dei risultati
 - Capire come funziona il gradiente e se va usato
 - FARE SCHELETRO CLASSE NEURALNETWORK
+- slides
