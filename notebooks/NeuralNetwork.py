@@ -1,5 +1,6 @@
 import numpy as np
 from functions import lossfunc
+import sys
 
 class NeuralNetwork:
 
@@ -94,7 +95,7 @@ class NeuralNetwork:
 
         return history
 
-    def train(self, input, target, epochs, eta, lam, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1): #callbacks
+    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0): #callbacks
         
         # Checking conflicts between parameters:
         if n_batch > input.shape[1]:
@@ -168,9 +169,13 @@ class NeuralNetwork:
                 self.update_history_batch(history, y_pred_train, self.output_layer.target, 'train')
                 
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
-                self.output_layer.update_weights(eta, lam)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt)
                 
             self.update_history_epoch(history)
+
+            if np.isnan(history['train_loss']).any() or np.isinf(history['train_loss']).any() or np.isnan(history['val_loss']).any() or np.isinf(history['val_loss']).any():
+                print("Model couldn't fit: occurred divergence!")
+                break
 
             if verbose == 1:
                 self.print_epoch(j, history, eta)

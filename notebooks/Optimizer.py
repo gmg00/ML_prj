@@ -12,11 +12,13 @@ class Optimizer:
         self.eps = eps
         self.eta = eta
         self.t = 1
+        self.dw_old = 0
+        self.db_old = 0
 
     def update_eta(self,eta):
         self.eta = eta
 
-    def update(self, w, b, dw, db, lam = 0):
+    def update(self, w, b, dw, db):
 
         self.m_dw = self.beta1 * self.m_dw + (1 - self.beta1) * dw
 
@@ -33,10 +35,9 @@ class Optimizer:
         v_db_corr = self.v_db / (1 - self.beta2**self.t)
 
         #update weights and biases
-        w = w - self.eta * (m_dw_corr / (np.sqrt(v_dw_corr) + self.eps)) - lam * w
-        b = b - self.eta * (m_db_corr / (np.sqrt(v_db_corr) + self.eps)) - lam * b
-
-
+        w = w - self.eta * (m_dw_corr / (np.sqrt(v_dw_corr) + self.eps))
+        b = b - self.eta * (m_db_corr / (np.sqrt(v_db_corr) + self.eps))
+        
         self.t += 1
 
         return w, b

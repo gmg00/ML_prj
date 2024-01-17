@@ -21,6 +21,8 @@ class Layer:
         self.d_act_function = np.vectorize(d_act_func[act_function])
         self.opt = Optimizer(self.dim_layer, self.prev_layer.dim_layer)
         self.eta = 0
+        self.d_W_old = 0
+        self.d_b_old = 0
     
 
     def forward(self, mode = 'train'):
@@ -51,19 +53,22 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer
 
-    def update_weights(self, eta, lam = 0, use_opt = 1):
+    def update_weights(self, eta, lam = 0, alpha = 0, use_opt = 1):
 
         if self.eta != eta:
             self.eta = eta
             self.opt.update_eta(self.eta)
 
         if use_opt == 1:
-            self.W, self.b = self.opt.update(self.W, self.b, self.d_W, self.d_b, lam)
+            self.d_W = self.d_W + lam * self.W
+            self.W, self.b = self.opt.update(self.W, self.b, self.d_W, self.d_b)
         else:
-            self.W = self.W - eta*self.d_W - lam * self.W
-            self.b = self.b - eta*self.d_b - lam * self.b
+            self.d_W_old = alpha * self.d_W_old - eta * self.d_W - lam * self.W
+            self.d_b_old = alpha * self.d_b_old - eta * self.d_b
+            self.W = self.W + self.d_W_old
+            self.b = self.b + self.d_b_old
 
-        self.prev_layer.update_weights(eta)
+        self.prev_layer.update_weights(eta, lam, alpha, use_opt)
     
 class Input(Layer):
 
@@ -83,7 +88,7 @@ class Input(Layer):
     def backward(self, next_delta = None, next_weights = None):
         return self.layer
     
-    def update_weights(self, lam):
+    def update_weights(self, eta, lam=0, alpha=0,use_opt=1):
         return self.layer
     
     def prova(self):
