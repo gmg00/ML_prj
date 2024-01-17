@@ -69,6 +69,11 @@ class Layer:
             self.b = self.b + self.d_b_old
 
         self.prev_layer.update_weights(eta, lam, alpha, use_opt)
+
+    def reset_velocity(self):
+        self.d_W_old = 0
+        self.d_b_old = 0
+        self.prev_layer.reset_velocity()
     
 class Input(Layer):
 
@@ -89,8 +94,8 @@ class Input(Layer):
         return self.layer
     
     def update_weights(self, eta, lam=0, alpha=0,use_opt=1):
-        return self.layer
+        return
     
-    def prova(self):
-        return self.dim_layer
+    def reset_velocity(self):
+        return
         
