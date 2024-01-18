@@ -170,13 +170,15 @@ class NeuralNetwork:
                 
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
                 self.output_layer.update_weights(eta, lam, alpha, use_opt)
+            
+            if n_batch != input_new.shape[1]:
+                self.output_layer.reset_velocity()
                 
-            self.output_layer.reset_velocity()
             self.update_history_epoch(history)
 
             if np.isnan(history['train_loss']).any() or np.isinf(history['train_loss']).any() or np.isnan(history['val_loss']).any() or np.isinf(history['val_loss']).any():
                 print("Model couldn't fit: occurred divergence!")
-                break
+                return -1
 
             if verbose == 1:
                 self.print_epoch(j, history, eta)

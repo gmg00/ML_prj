@@ -107,6 +107,10 @@ def accuracy(y_pred, y_true):
         if y_tmp[i] == y_true[i]: correct += 1
     
     return correct / float(len(y_tmp)) * 100.0
+
+def MSE_metric(y_pred,y_true):
+    return ((y_pred - y_true)**2/y_pred.shape[1]).reshape(y_pred.shape).sum(axis=1)
  
 lossfunc = {'MSE':(MSE,d_MSE),
             'binary_crossentropy':(binary_crossentropy,d_binary_crossentropy)}
+
