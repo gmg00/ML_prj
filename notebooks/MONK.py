@@ -7,7 +7,7 @@ from functions import accuracy, MSE
 
 if __name__ == '__main__':
     
-    do_grid_search = False
+    do_grid_search = True
     best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb.pkl'
     param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid.pkl'
     # DATASET ACQUISITION
