@@ -91,11 +91,12 @@ class Input(Layer):
         return self.layer
     
     def backward(self, next_delta = None, next_weights = None):
+        
         return self.layer
     
     def update_weights(self, eta, lam=0, alpha=0,use_opt=1):
-        return
+        pass
     
     def reset_velocity(self):
-        return
+        pass
         

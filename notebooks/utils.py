@@ -4,6 +4,7 @@ import pandas as pd
 from Layer import Input, Layer
 from NeuralNetwork import NeuralNetwork
 from time import time
+import pickle
 
 def get_data(filename):
     """Get data from filename.
@@ -156,7 +157,8 @@ def grid_search(input, target, params, cv_folds, metrics, callbacks):
         
         print(f'Starting params {i+1}/{len(param_grid)}: {p_comb}')
         t0 = time()
-        p_comb['results'] = cross_validation(input, target, cv_folds, metrics, p_comb, callbacks)
+        p_comb_copy  = p_comb.copy()
+        p_comb['results'] = cross_validation(input, target, cv_folds, metrics, p_comb_copy, callbacks)
         p_comb['elapsed_time'] = time() - t0
         print(f'Results:')
         for key, value in p_comb['results'].items():
@@ -209,3 +211,17 @@ def save_dict_to_file(dictionary, filename):
     """
     with open(filename, 'wb') as file:
         pickle.dump(dictionary, file)
+
+def load_dict_from_file(filename):
+    """
+    Load a dictionary from a file using pickle.
+
+    Parameters:
+    - filename: The name of the file containing the dictionary.
+
+    Returns:
+    - The loaded dictionary.
+    """
+    with open(filename, 'rb') as file:
+        loaded_dict = pickle.load(file)
+    return loaded_dict
