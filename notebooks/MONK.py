@@ -7,9 +7,9 @@ from functions import accuracy, MSE
 
 if __name__ == '__main__':
     
-    do_grid_search = True
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid.pkl'
+    do_grid_search = False
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb2.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid2.pkl'
     # DATASET ACQUISITION
     
     df = get_data('/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/MONK/monks-1.train')
@@ -37,8 +37,8 @@ if __name__ == '__main__':
               'n_batch' : [1,31,'batch'],
               'scale_eta_batchsize' : ['sqrt','lin',None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
-              'dim_hidden' : [2,3,4],
-              'hidden_act_func' : ['relu']
+              'dim_hidden' : [3,4],
+              'hidden_act_func' : ['relu', 'sigm']
             }
         
         callbacks = {

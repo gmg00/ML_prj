@@ -53,7 +53,7 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer
 
-    def update_weights(self, eta, lam = 0, alpha = 0, use_opt = 1):
+    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 1):
 
         if self.eta != eta:
             self.eta = eta
@@ -63,7 +63,9 @@ class Layer:
             self.d_W = self.d_W + lam * self.W
             self.W, self.b = self.opt.update(self.W, self.b, self.d_W, self.d_b)
         else:
-            self.d_W_old = alpha * self.d_W_old - eta * self.d_W - lam * self.W
+            if l1_reg: reg = + lam * np.sign(self.W)
+            else: reg = + lam * self.W
+            self.d_W_old = alpha * self.d_W_old - eta * self.d_W - reg
             self.d_b_old = alpha * self.d_b_old - eta * self.d_b
             self.W = self.W + self.d_W_old
             self.b = self.b + self.d_b_old

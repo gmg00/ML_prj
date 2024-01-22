@@ -17,9 +17,9 @@ class NeuralNetwork:
     
     def update_history_batch(self, history, y_pred, y_true, train_or_val):
 
-        history[f'{train_or_val}_loss_var'].append(np.mean(np.sum(self.lossfunc(y_pred, y_true),axis=1)))
+        history[f'{train_or_val}_loss_var'].append(self.lossfunc(y_pred, y_true))
         for m in self.metrics:
-            history[f'{train_or_val}_{m.__name__}_var'].append(np.mean(np.sum(m(y_pred, y_true),axis=1)))
+            history[f'{train_or_val}_{m.__name__}_var'].append(m(y_pred, y_true))
 
     def update_history_epoch(self, history):
         
