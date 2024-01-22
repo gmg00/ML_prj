@@ -32,20 +32,22 @@ if __name__ == '__main__':
     if do_grid_search:
         params = {
               'eta' : [0.1],
-              'lam' : [0.,0.1],
-              'alpha':[0.9],
-              'epochs': [500],
-              'n_batch' : [128],
+              'lam' : [0.,0.01],
+              'alpha':[0.9,0.5],
+              'epochs': [250],
+              'n_batch' : [128,'batch'],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
-              'dim_hidden' : [10,15,20,25],
+              'dim_hidden' : [15],
               'hidden_act_func' : ['sigm'],
-              'dim_hidden2' : [10,15,20],
+              'dim_hidden2' : [10,15],
               'hidden_act_func2' : ['sigm'],
-              'dim_hidden3' : [5],
+              'dim_hidden3' : [10,5],
               'hidden_act_func3' : ['sigm'],
+              'dim_hidden4' : [5],
+              'hidden_act_func4' :  ['sigm'],
 
-              'use_opt' : [1],
+              'use_opt' : [0],
               'loss' : ['MSE'],
               'output_act_func' : ['lin']
 
@@ -56,7 +58,7 @@ if __name__ == '__main__':
             'reduce_eta' : None
         }
         
-        best_comb, param_grid = grid_search2(X_train, y_train.reshape((3,X_train.shape[1])), params, 5, [MEE], callbacks)
+        best_comb, param_grid = grid_search(X_train, y_train.reshape((3,X_train.shape[1])), params, 5, [MEE], callbacks)
 
         save_dict_to_file(best_comb,best_comb_filename)
         save_dict_to_file(param_grid,param_grid_filename)
