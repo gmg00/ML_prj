@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from NeuralNetwork import NeuralNetwork
-from utils import get_data, onehot_encoding, grid_search2, save_dict_to_file, load_dict_from_file
+from utils import get_data, onehot_encoding, grid_search, save_dict_to_file, load_dict_from_file
 from Layer import Layer, Input
 from functions import accuracy, MSE, MEE
 import pandas as pd
@@ -9,8 +9,8 @@ import pandas as pd
 if __name__ == '__main__':
     
     do_grid_search = True
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup.pkl'
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup2.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup2.pkl'
     # DATASET ACQUISITION
     
     names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
               'eta' : [0.1],
               'lam' : [0.,0.01],
               'alpha':[0.9,0.5],
-              'epochs': [250],
+              'epochs': [10],
               'n_batch' : [128,'batch'],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
@@ -80,11 +80,15 @@ if __name__ == '__main__':
     #print(results)
     
     input_layer = Input(X_train.shape[0])
-    hidden_layer = Layer(input_layer, best_comb.pop('dim_hidden1'), best_comb.pop('hidden_act_func1'))
-    hidden_layer = Layer(input_layer, best_comb.pop('dim_hidden2'), best_comb.pop('hidden_act_func2'))
-    output_layer = Layer(hidden_layer, 3, 'lin')
+    hidden_layer = Layer(input_layer, best_comb.pop('dim_hidden'), best_comb.pop('hidden_act_func'))
+    o = 2
+    while True:
+        if f'dim_hidden{o}' in best_comb.keys():
+            hidden_layer = Layer(hidden_layer, best_comb.pop(f'dim_hidden{o}'), best_comb.pop(f'hidden_act_func{o}'))
+        else: break
+    output_layer = Layer(hidden_layer, 3, best_comb.pop('output_act_func'))
 
-    model = NeuralNetwork(input_layer, output_layer, 'MSE', [MEE])
+    model = NeuralNetwork(input_layer, output_layer, best_comb.pop('loss'), metrics=[MEE])
     history = model.retrain(X_train, y_train.reshape((3,X_train.shape[1])), test_data = [X_test,y_test.reshape((3,X_test.shape[1]))], **best_comb)
 
     plt.figure(1)

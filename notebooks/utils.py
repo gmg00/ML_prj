@@ -284,11 +284,11 @@ def grid_search(input, target, params, cv_folds, metrics, callbacks):
         print(f"Elapsed time: {p_comb['elapsed_time']:2f} s")
         print('-------------------------------------------------')
     
-    best_m = param_grid[0]['results'][f'val_accuracy_mean']
+    best_m = param_grid[0]['results'][f'val_loss_mean']
     best_comb = param_grid[0]
     for p_comb in param_grid:
-        if p_comb['results'][f'val_accuracy_mean'] > best_m:
-            best_m = p_comb['results'][f'val_accuracy_mean']
+        if p_comb['results'][f'val_loss_mean'] < best_m:
+            best_m = p_comb['results'][f'val_loss_mean']
             best_comb = p_comb
     print(f'Best combination of parameters: {best_comb}')
     return best_comb, param_grid
@@ -328,20 +328,23 @@ def random_search(input, target, params, cv_folds, metrics, callbacks, tries):
     print(f'Grid of parameters: {params}')
     print('-------------------------------------------------')
     param_grid = param_grid[index]
-    for p_comb in param_grid[:tries]:
-        print(f'Starting params: {p_comb}')
-        p_comb['results'] = cross_validation(input, target, cv_folds, metrics, p_comb, callbacks)
-        
+    for i,p_comb in enumerate(param_grid[:tries]):
+        print(f'Starting params {i+1}/{len(param_grid)}: {p_comb}')
+        t0 = time()
+        p_comb_copy  = p_comb.copy()
+        p_comb['results'] = cross_validation(input, target, cv_folds, metrics, p_comb_copy, callbacks)
+        p_comb['elapsed_time'] = time() - t0
         print(f'Results:')
         for key, value in p_comb['results'].items():
             print(f'{key}: {value:.2e}')
+        print(f"Elapsed time: {p_comb['elapsed_time']:2f} s")
         print('-------------------------------------------------')
     
-    best_m = param_grid[0]['results'][f'val_accuracy_mean']
+    best_m = param_grid[0]['results'][f'val_loss_mean']
     best_comb = param_grid[0]
     for p_comb in param_grid:
-        if p_comb['results'][f'val_accuracy_mean'] > best_m:
-            best_m = p_comb['results'][f'val_accuracy_mean']
+        if p_comb['results'][f'val_loss_mean'] > best_m:
+            best_m = p_comb['results'][f'val_loss_mean']
             best_comb = p_comb
     print(f'Best combination of parameters: {best_comb}')
     return best_comb
