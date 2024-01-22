@@ -34,7 +34,7 @@ if __name__ == '__main__':
               'eta' : [0.1],
               'lam' : [0.,0.01],
               'alpha':[0.9,0.5],
-              'epochs': [10],
+              'epochs': [250],
               'n_batch' : [128,'batch'],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
