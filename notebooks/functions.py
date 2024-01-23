@@ -65,6 +65,31 @@ def d_relu(x):
     """
     return np.where(x > 0, 1, 0)
     
+def leaky_relu(x, alpha=0.01):
+    """
+    Leaky ReLU activation function.
+
+    Parameters:
+    - x: Input value or array.
+    - alpha: Slope of the negative part (default is 0.01).
+
+    Returns:
+    - Output of the Leaky ReLU function.
+    """
+    return np.where(x > 0, x, alpha * x)
+
+def d_leaky_relu(x, alpha=0.01):
+    """
+    Derivative of the Leaky ReLU activation function.
+
+    Parameters:
+    - x: Input value or array.
+    - alpha: Slope of the negative part (default is 0.01).
+
+    Returns:
+    - Derivative of the Leaky ReLU function.
+    """
+    return np.where(x > 0, 1, alpha)
 
 #hyperbolic tangent activation function
 def TanH(x):
@@ -78,7 +103,8 @@ act_func = {
     'lin': linear,
     'sigm': sigmoid,
     'relu': relu,
-    'tanh': TanH
+    'tanh': TanH,
+    'leaky_relu' : leaky_relu
 }
 
 #A second dictionary for their derivatives
@@ -86,7 +112,8 @@ d_act_func = {
     'lin': d_linear,
     'sigm': d_sigmoid,
     'relu': d_relu,
-    'tanh': d_TanH
+    'tanh': d_TanH,
+    'leaky_relu' : d_leaky_relu
 }
 
 def d_MSE(layer, target):

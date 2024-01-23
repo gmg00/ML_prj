@@ -41,11 +41,9 @@ if __name__ == '__main__':
               'dim_hidden' : [15],
               'hidden_act_func' : ['sigm'],
               'dim_hidden2' : [10,15],
-              'hidden_act_func2' : ['sigm'],
+              'hidden_act_func2' : ['sigm','tanh'],
               'dim_hidden3' : [10,5],
               'hidden_act_func3' : ['sigm'],
-              'dim_hidden4' : [5],
-              'hidden_act_func4' :  ['sigm'],
 
               'use_opt' : [0],
               'loss' : ['MSE'],
@@ -85,6 +83,7 @@ if __name__ == '__main__':
     while True:
         if f'dim_hidden{o}' in best_comb.keys():
             hidden_layer = Layer(hidden_layer, best_comb.pop(f'dim_hidden{o}'), best_comb.pop(f'hidden_act_func{o}'))
+            o += 1
         else: break
     output_layer = Layer(hidden_layer, 3, best_comb.pop('output_act_func'))
 
