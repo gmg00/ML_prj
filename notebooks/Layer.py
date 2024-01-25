@@ -38,20 +38,14 @@ class Layer:
     def backward(self, next_delta = None, next_weights = None, lossfunc = None, last = False):
     
         if last == True:
-
-            delta = self.d_act_function(self.z) * lossfunc(self.layer,self.target)
-
-            self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
-            self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
-            return self.layer 
+            delta = self.d_act_function(self.z) * lossfunc(self.layer,self.target) 
            
         else:
-
             delta = self.d_act_function(self.z) * next_weights.T.dot(next_delta)
 
-            self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
-            self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
-            return self.layer
+        self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
+        self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
+        return self.layer
 
     def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 1, nest=False):
 
