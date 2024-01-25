@@ -97,7 +97,7 @@ class NeuralNetwork:
 
         return history
 
-    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0):
+    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False):
         
         # Checking conflicts between parameters:
         if n_batch > input.shape[1]:
@@ -159,9 +159,14 @@ class NeuralNetwork:
                 self.input_layer.layer = input_new[:, k:end_idx]
                 self.output_layer.target = target_new[:, k:end_idx]
 
-                self.output_layer.forward()
-                
-                self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
+                if nest:
+                    self.output_layer.nest_update(alpha)
+                    self.output_layer.forward(mode='nest')
+                    self.output_layer.backward_nest(lossfunc = self.d_lossfunc, last = True)
+                else:
+                    self.output_layer.forward()
+                    self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
+
                 self.output_layer.update_weights(eta, lam, alpha, use_opt)
 
                 self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')

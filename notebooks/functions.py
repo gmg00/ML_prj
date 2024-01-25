@@ -91,6 +91,33 @@ def d_leaky_relu(x, alpha=0.01):
     """
     return np.where(x > 0, 1, alpha)
 
+def elu(x, alpha=1.0):
+    """
+    Exponential Linear Unit (ELU) activation function.
+
+    Parameters:
+    - x: Input array or scalar.
+    - alpha: Hyperparameter controlling the output for x < 0.
+
+    Returns:
+    - Output of the ELU function applied to the input.
+    """
+    return np.where(x > 0, x, alpha * (np.exp(x) - 1))
+
+def d_elu(x, alpha=1.0):
+    """
+    Derivative of the Exponential Linear Unit (ELU) activation function.
+
+    Parameters:
+    - x: Input array or scalar.
+    - alpha: Hyperparameter controlling the output for x < 0.
+
+    Returns:
+    - Derivative of the ELU function with respect to the input.
+    """
+    return np.where(x > 0, 1, alpha * np.exp(x))
+
+
 #hyperbolic tangent activation function
 def TanH(x):
     return np.tanh(x)
@@ -104,7 +131,8 @@ act_func = {
     'sigm': sigmoid,
     'relu': relu,
     'tanh': TanH,
-    'leaky_relu' : leaky_relu
+    'leaky_relu' : leaky_relu,
+    'elu' : elu
 }
 
 #A second dictionary for their derivatives
@@ -113,7 +141,8 @@ d_act_func = {
     'sigm': d_sigmoid,
     'relu': d_relu,
     'tanh': d_TanH,
-    'leaky_relu' : d_leaky_relu
+    'leaky_relu' : d_leaky_relu,
+    'elu' : d_elu
 }
 
 def d_MSE(layer, target):
