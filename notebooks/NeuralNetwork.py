@@ -159,15 +159,12 @@ class NeuralNetwork:
                 self.input_layer.layer = input_new[:, k:end_idx]
                 self.output_layer.target = target_new[:, k:end_idx]
 
-                if nest:
-                    self.output_layer.nest_update(alpha)
-                    self.output_layer.forward(mode='nest')
-                    self.output_layer.backward_nest(lossfunc = self.d_lossfunc, last = True)
-                else:
-                    self.output_layer.forward()
-                    self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
+                if nest: self.output_layer.nest_update(alpha)
+    
+                self.output_layer.forward()
+                self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
-                self.output_layer.update_weights(eta, lam, alpha, use_opt)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt, nest)
 
                 self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
 

@@ -23,11 +23,6 @@ class Layer:
         self.eta = 0
         self.d_W_old = 0
         self.d_b_old = 0
-
-        self.W_projected = 0
-        self.b_projected  = 0
-        self.z_projected = 0
-        self.layer_projected = 0
     
 
     def forward(self, mode = 'train'):
@@ -40,12 +35,6 @@ class Layer:
         elif mode == 'predict':
             return self.act_function(self.W.dot(self.prev_layer.forward(mode = 'predict')) + self.b)
         
-        elif mode == 'nest':
-            self.z_projected = self.W_projected.dot(self.prev_layer.forward(mode = 'nest')) + self.b_projected
-            self.layer_projected = self.act_function(self.z_projected)
-            return self.layer_projected
-        
-    
     def backward(self, next_delta = None, next_weights = None, lossfunc = None, last = False):
     
         if last == True:
@@ -63,25 +52,12 @@ class Layer:
             self.d_W = delta.dot(self.prev_layer.backward(delta,self.W).T)
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer
-        
-    def backward_nest(self, next_delta = None, next_weights = None, lossfunc = None, last = False):
-    
-        if last == True:
 
-            delta = self.d_act_function(self.z_projected) * lossfunc(self.layer_projected,self.target)
-            self.d_W = delta.dot(self.prev_layer.backward_nest(delta,self.W_projected).T)
-            self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
-            return self.layer_projected
-           
-        else:
+    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 1, nest=False):
 
-            delta = self.d_act_function(self.z_projected) * next_weights.T.dot(next_delta)
-
-            self.d_W = delta.dot(self.prev_layer.backward_nest(delta,self.W_projected).T)
-            self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
-            return self.layer_projected
-
-    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 1):
+        if nest: 
+            self.W = self.W_old
+            self.b = self.b_old
 
         if self.eta != eta:
             self.eta = eta
@@ -101,8 +77,10 @@ class Layer:
         self.prev_layer.update_weights(eta, lam, alpha, use_opt)
 
     def nest_update(self, alpha):
-        self.W_projected = self.W + alpha * self.d_W_old
-        self.b_projected = self.b + alpha * self.d_b_old
+        self.W_old = self.W
+        self.b_old = self.b
+        self.W = self.W + alpha * self.d_W_old
+        self.b = self.b + alpha * self.d_b_old
         self.prev_layer.nest_update(alpha)
 
     def reset_velocity(self):
