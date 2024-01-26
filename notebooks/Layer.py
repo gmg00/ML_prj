@@ -81,7 +81,7 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer_projected
 
-    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 1):
+    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0):
 
         if self.eta != eta:
             self.eta = eta
@@ -98,7 +98,7 @@ class Layer:
             self.W = self.W + self.d_W_old
             self.b = self.b + self.d_b_old
 
-        self.prev_layer.update_weights(eta, lam, alpha, use_opt)
+        self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt)
 
     def nest_update(self, alpha):
         self.W_projected = self.W + alpha * self.d_W_old
@@ -128,7 +128,7 @@ class Input(Layer):
         
         return self.layer
     
-    def update_weights(self, eta, lam=0, alpha=0,use_opt=1):
+    def update_weights(self, eta, lam=0, alpha=0,l1_reg=False,use_opt=0):
         pass
     
     def reset_velocity(self):
