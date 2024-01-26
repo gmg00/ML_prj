@@ -288,7 +288,7 @@ class NeuralNetwork:
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
                 # Permorf weights update.
-                self.output_layer.update_weights(eta, lam, alpha, use_opt, nest)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest)
 
                 # Update history dictionary with batch-level training loss and metrics information.
                 history = self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
