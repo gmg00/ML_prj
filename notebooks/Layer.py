@@ -49,6 +49,8 @@ class Layer:
 
     def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0, nest=False):
 
+        #print(f'eta:{eta}, lambda:{lam}, alpha:{alpha}, l1_reg:{l1_reg}, use_opt:{use_opt}, nest:{nest}')
+
         if nest: 
             self.W = self.W_old
             self.b = self.b_old
@@ -109,7 +111,4 @@ class Input(Layer):
     def nest_update(self, alpha):
         pass
 
-    def backward_nest(self, next_delta = None, next_weights = None):
-
-        return self.layer
         

@@ -281,7 +281,8 @@ class NeuralNetwork:
                 self.output_layer.target = target_new[:, k:end_idx]
 
                 # If nest is True update weights following Nestorov theory.
-                if nest: self.output_layer.nest_update(alpha)
+                if nest:
+                    self.output_layer.nest_update(alpha)
     
                 # Perform forward and backward propagation.
                 self.output_layer.forward()
