@@ -12,8 +12,9 @@ class Layer:
     def init_params(self, dim_layer, act_function):
         #self.dim_batch = self.prev_layer.dim_batch
         self.dim_layer = dim_layer
-        self.W = np.random.uniform(-0.5, 0.5, (dim_layer, self.prev_layer.dim_layer))    #inizializzo la matrice dei pesi
-        self.b = np.random.uniform(-0.5, 0.5, (dim_layer, 1))      #inizializzo il vettore dei bias
+        #self.W = np.random.uniform(-0.5, 0.5, (dim_layer, self.prev_layer.dim_layer))    #inizializzo la matrice dei pesi
+        #self.b = np.random.uniform(-0.5, 0.5, (dim_layer, 1))      #inizializzo il vettore dei bias
+        self.init_weights()
         self.layer = None #np.empty((dim_layer, self.dim_batch))
         self.z = None
         self.target = None
@@ -29,6 +30,22 @@ class Layer:
         self.z_projected = 0
         self.layer_projected = 0
     
+    def init_weights(self, mode='rand', range = [-0.5,0.5]):
+        if mode == 'rand':
+            self.W = np.random.uniform(range[0], range[1], (self.dim_layer, self.prev_layer.dim_layer))    
+            self.b = np.random.uniform(range[0], range[1], (self.dim_layer, 1))    
+
+    def get_initial_weights(self, arr=[]):
+
+        arr = self.prev_layer.get_initial_weights(arr)
+        arr.append([self.W,self.b])
+        return arr
+    
+    def set_weights(self,arr,i=0):
+        i = self.prev_layer.set_weights(arr,i)
+        self.W = arr[i][0]
+        self.b = arr[i][1]
+        return i+1
 
     def forward(self, mode = 'train'):
     
@@ -81,7 +98,7 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer_projected
 
-    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0):
+    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0, nest=False):
 
         if self.eta != eta:
             self.eta = eta
@@ -140,4 +157,9 @@ class Input(Layer):
     def backward_nest(self, next_delta = None, next_weights = None):
 
         return self.layer
+    
+    def get_initial_weights(self, weights_dict, layer='hidden'):
+        return []
         
+    def set_weights(self, arr, i=0):
+        return 0

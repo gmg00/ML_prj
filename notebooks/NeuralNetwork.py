@@ -11,6 +11,12 @@ class NeuralNetwork:
         self.d_lossfunc = lossfunc[loss][1]
         self.metrics = metrics
 
+    def get_initial_weights_list(self):
+        return self.output_layer.get_initial_weights()
+    
+    def set_initial_weights(self,weights_list):
+        self.output_layer.set_weights(weights_list)
+
     def predict(self,input):
         self.input_layer.layer = input
         return self.output_layer.forward(mode = 'predict')
@@ -97,7 +103,7 @@ class NeuralNetwork:
 
         return history
 
-    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False):
+    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False, l1_reg=False):
         
         # Checking conflicts between parameters:
         if n_batch > input.shape[1]:
@@ -167,7 +173,7 @@ class NeuralNetwork:
                     self.output_layer.forward()
                     self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
-                self.output_layer.update_weights(eta, lam, alpha, use_opt)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
 
                 self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
 
