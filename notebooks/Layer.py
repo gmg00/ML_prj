@@ -4,17 +4,17 @@ from Optimizer import Optimizer
 
 class Layer:
 
-    def __init__(self, prev_layer, dim_layer, act_function):
+    def __init__(self, prev_layer, dim_layer, act_function, init_weights_mode='rand'):
   
         self.prev_layer = prev_layer
-        self.init_params(dim_layer, act_function) #self.init_params(dim_layer, act_function, input)
+        self.init_params(dim_layer, act_function, init_weights_mode) #self.init_params(dim_layer, act_function, input)
 
-    def init_params(self, dim_layer, act_function):
+    def init_params(self, dim_layer, act_function, init_weights_mode):
         #self.dim_batch = self.prev_layer.dim_batch
         self.dim_layer = dim_layer
         #self.W = np.random.uniform(-0.5, 0.5, (dim_layer, self.prev_layer.dim_layer))    #inizializzo la matrice dei pesi
         #self.b = np.random.uniform(-0.5, 0.5, (dim_layer, 1))      #inizializzo il vettore dei bias
-        self.init_weights()
+        self.init_weights(init_weights_mode)
         self.layer = None #np.empty((dim_layer, self.dim_batch))
         self.z = None
         self.target = None
@@ -33,7 +33,10 @@ class Layer:
     def init_weights(self, mode='rand', range = [-0.5,0.5]):
         if mode == 'rand':
             self.W = np.random.uniform(range[0], range[1], (self.dim_layer, self.prev_layer.dim_layer))    
-            self.b = np.random.uniform(range[0], range[1], (self.dim_layer, 1))    
+            self.b = np.random.uniform(range[0], range[1], (self.dim_layer, 1))
+        if mode == 'xavier':
+            self.W = np.random.normal(0, 2/self.dim_layer, (self.dim_layer, self.prev_layer.dim_layer))
+            self.b = np.random.normal(0, 2/self.dim_layer, (self.dim_layer, 1))
 
     def get_initial_weights(self, arr=[]):
 
@@ -98,14 +101,16 @@ class Layer:
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer_projected
 
-    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0, nest=False):
+    def update_weights(self, eta, lam, alpha, l1_reg = False, use_opt = 0, nest=False):
 
         if self.eta != eta:
             self.eta = eta
             self.opt.update_eta(self.eta)
 
         if use_opt == 1:
-            self.d_W = self.d_W + lam * self.W
+            if l1_reg: reg = + lam * np.sign(self.W)
+            else: reg = + lam * self.W
+            self.d_W = self.d_W + reg
             self.W, self.b = self.opt.update(self.W, self.b, self.d_W, self.d_b)
         else:
             if l1_reg: reg = + lam * np.sign(self.W)
@@ -133,7 +138,7 @@ class Input(Layer):
 
         Layer.__init__(self, None, input_dim, 'lin')
 
-    def init_params(self, dim_layer, act_function):
+    def init_params(self, dim_layer, act_function, init_weights_mode):
         self.layer = None
 
         self.dim_layer = dim_layer

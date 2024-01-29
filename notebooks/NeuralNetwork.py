@@ -180,8 +180,8 @@ class NeuralNetwork:
                 self.update_history_batch(history, self.predict(val_input), val_target, 'val')
 
             
-            if n_batch != input_new.shape[1]:
-                self.output_layer.reset_velocity()
+            #if n_batch != input_new.shape[1]:
+            #    self.output_layer.reset_velocity()
                 
             self.update_history_epoch(history)
 
