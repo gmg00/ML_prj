@@ -9,7 +9,7 @@ import pandas as pd
 if __name__ == '__main__':
     
     do_grid_search = False
-    retraining_epochs = 1000
+    retraining_epochs = 500
 
     best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup2.pkl'
     param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup2.pkl'
@@ -87,13 +87,7 @@ if __name__ == '__main__':
 
     if best_comb['n_batch'] == 'batch':
         best_comb['n_batch'] = X_train.shape[1]
-    '''
-    if best_comb['scale_eta_batchsize'] == 'lin':
-        best_comb['eta'] = best_comb['eta'] * best_comb['n_batch']
-    if best_comb['scale_eta_batchsize'] == 'sqrt':
-        best_comb['eta'] = best_comb['eta'] * np.sqrt(best_comb['n_batch'])
-    best_comb.pop('scale_eta_batchsize')
-    '''
+
     best_comb['epochs'] = retraining_epochs
     
     input_layer = Input(X_train.shape[0])

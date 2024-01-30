@@ -18,6 +18,22 @@ class NeuralNetwork:
         self.d_lossfunc = lossfunc[loss][1]  # Set the derivative of the loss function
         self.metrics = metrics
 
+    def get_weights_list(self):
+        """ Get a list with weight matrices and biases of every layer in the network.
+
+        Returns:
+            list: list with weight matrices and biases of every layer in the network.
+        """        
+        return self.output_layer.get_weights()
+    
+    def set_initial_weights(self,weights_list):
+        """ Set the initial weights and biases for every layer in the network.
+
+        Args:
+            weights_list (list): list with weight matrices and biases of every layer in the network.
+        """        
+        self.output_layer.set_weights(weights_list)
+
     def predict(self,input):
         """ Make prediction using the trained network.
 
@@ -195,7 +211,7 @@ class NeuralNetwork:
 
         return history
 
-    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False):
+    def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False, l1_reg=False):
         """ Train the neural network.
 
         Args:
@@ -289,16 +305,12 @@ class NeuralNetwork:
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
                 # Permorf weights update.
-                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
 
                 # Update history dictionary with batch-level training loss and metrics information.
                 history = self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
                 # Update history dictionary with batch-level validation loss and metrics information.
                 history = self.update_history_batch(history, self.predict(val_input), val_target, 'val')
-
-            # Reset velocity if batch size isn't equal to training input lenght.
-            if n_batch != input_new.shape[1]:
-                self.output_layer.reset_velocity()
                 
             # Update history dictionary with epoch-level information.
             history = self.update_history_epoch(history)
@@ -327,7 +339,7 @@ class NeuralNetwork:
         # Return history dictionary cleared of batch-level information.
         return self.clear_history(history)
     
-    def retrain(self, input, target, epochs, eta, lam, alpha, n_batch, test_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False): 
+    def retrain(self, input, target, epochs, eta, lam, alpha, n_batch, test_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False, l1_reg=False): 
         """ Rerain the neural network.
 
         Args:
@@ -397,17 +409,13 @@ class NeuralNetwork:
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
                 # Permorf weights update.
-                self.output_layer.update_weights(eta, lam, alpha, use_opt, nest)
+                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
 
                 # Update history dictionary with batch-level training loss and metrics information.
                 history = self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
                 # Update history dictionary with batch-level validation loss and metrics information.
-                history = self.update_history_batch(history, self.predict(test_input), test_target, 'test')     
+                history = self.update_history_batch(history, self.predict(test_input), test_target, 'test')  
             
-            # Reset velocity if batch size isn't equal to training input lenght.
-            if n_batch != input_new.shape[1]:
-                self.output_layer.reset_velocity()
-                
             # Update history dictionary with epoch-level information.
             history = self.update_history_epoch(history, val_or_test='test')
 
