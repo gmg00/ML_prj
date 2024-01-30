@@ -31,6 +31,13 @@ class Layer:
         self.layer_projected = 0
     
     def init_weights(self, mode='rand', range = [-0.5,0.5]):
+        """ Initialize weight matrix and biases for the layer.
+
+        Args:
+            mode (str, optional): if 'rand' compute weights with a random uniform distribution between limits of range,
+            if 'xavier' use Xavier/Glorot weight initialization. Defaults to 'rand'.
+            range (list, optional): range for the uniform distribution. Defaults to [-0.5,0.5].
+        """        
         if mode == 'rand':
             self.W = np.random.uniform(range[0], range[1], (self.dim_layer, self.prev_layer.dim_layer))    
             self.b = np.random.uniform(range[0], range[1], (self.dim_layer, 1))
@@ -39,18 +46,35 @@ class Layer:
             self.b = np.random.normal(0, 2/self.dim_layer, (self.dim_layer, 1))
 
     def get_initial_weights(self, arr=[]):
-
+        
         arr = self.prev_layer.get_initial_weights(arr)
         arr.append([self.W,self.b])
         return arr
     
     def set_weights(self,arr,i=0):
+        """ Set weights and biases for the layer.
+
+        Args:
+            arr (list): list of every weight and bias matrix in the network.
+            i (int, optional): layer index for extraction of the right matrices from the list. Defaults to 0.
+
+        Returns:
+            int: index for the next layer.
+        """        
         i = self.prev_layer.set_weights(arr,i)
         self.W = arr[i][0]
         self.b = arr[i][1]
         return i+1
 
     def forward(self, mode = 'train'):
+        """ Compute forward propagation for the current layer recursively.
+
+        Args:
+            mode (str, optional): if 'train' modify net and layer, if 'predict' leave them unchanged. Defaults to 'train'.
+
+        Returns:
+            np.array: current layer array.
+        """        
     
         if mode == 'train':
             self.z = self.W.dot(self.prev_layer.forward()) + self.b
@@ -123,6 +147,11 @@ class Layer:
         self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt)
 
     def nest_update(self, alpha):
+        """ Update weights before computing gradient as in Nestorov approach.
+
+        Args:
+            alpha (float): momentum parameter.
+        """        
         self.W_projected = self.W + alpha * self.d_W_old
         self.b_projected = self.b + alpha * self.d_b_old
         self.prev_layer.nest_update(alpha)
