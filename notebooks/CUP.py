@@ -8,11 +8,11 @@ import pandas as pd
 
 if __name__ == '__main__':
     
-    do_grid_search = False
+    do_grid_search = True
     retraining_epochs = 500
 
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup2.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup2.pkl'
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup11.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup11.pkl'
     # DATASET ACQUISITION
     
     names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
@@ -33,19 +33,17 @@ if __name__ == '__main__':
     # HYPERPARAMETERS DICTONARY
     if do_grid_search:
         params = {
-              'eta' : [0.009,0.007,0.005],
-              'lam' : [0.5,0.1],
-              'alpha':[0.9,1.2],
+              'eta' : [0.0003,0.0004],
+              'lam' : [0.00003,0.00001],
+              'alpha':[0.9],
               'epochs': [500],
               'n_batch' : [150],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
-              'dim_hidden' : [25],
-              'hidden_act_func' : ['leaky_relu'],
-              'dim_hidden2' : [20,30],
-              'hidden_act_func2' : ['leaky_relu'],
-              'dim_hidden3' : [10],
-              'hidden_act_func3' : ['leaky_relu'],
+              'dim_hidden' : [70],
+              'hidden_act_func' : ['tanh'],
+              'dim_hidden2' : [70],
+              'hidden_act_func2' : ['tanh'],
 
               'use_opt' : [0],
               'loss' : ['MSE'],
@@ -64,22 +62,23 @@ if __name__ == '__main__':
         save_dict_to_file(param_grid,param_grid_filename)
 
     best_comb = load_dict_from_file(best_comb_filename)
-    best_comb = {'dim_hidden': 30,
-        'hidden_act_func': 'leaky_relu',
-        'dim_hidden2': 30,
-        'hidden_act_func2': 'leaky_relu',
-        'dim_hidden3': 30,
-        'hidden_act_func3': 'leaky_relu',
-        'dim_hidden4': 30,
-        'hidden_act_func4': 'leaky_relu',
-        'eta': 0.003,
-        'lam': 0.06,
-        'alpha': 0.05,
-        'n_batch': 150,
-        'use_opt': 0,
-        'loss': 'MSE',
-        'output_act_func' : 'lin'
-        }
+
+    best_comb = {'eta': 0.003,
+                 'lam': 0.00003,
+                 'alpha': 0.9,
+                 'epochs': 500,
+                 'n_batch': 150, 
+                 'dim_hidden': 70, 
+                 'hidden_act_func': 'tanh', 
+                 'dim_hidden2': 70, 
+                 'hidden_act_func2': 'tanh', 
+                 #'dim_hidden3': 70, 
+                 #'hidden_act_func3': 'tanh', 
+                 'use_opt': 0, 
+                 'loss': 'MSE', 
+                 'output_act_func': 'lin', 
+                 'nest':True
+                 }
     print(best_comb)
 
     #results = best_comb.pop('results')
@@ -127,6 +126,7 @@ if __name__ == '__main__':
     plt.legend(fontsize=15)
 
     plt.show()
+    
 
     # (Grid Search sui callback) -> MONK_exploration
 
