@@ -115,13 +115,13 @@ class Layer:
         """ Compute backward propagation ricursively.
 
         Args:
-            next_delta (_type_, optional): _description_. Defaults to None.
-            next_weights (_type_, optional): _description_. Defaults to None.
-            lossfunc (_type_, optional): _description_. Defaults to None.
-            last (bool, optional): _description_. Defaults to False.
+            next_delta (np.array, optional): delta of the next layer. Defaults to None.
+            next_weights (np.array, optional): weights of the next layer. Defaults to None.
+            lossfunc (func, optional): loss function of the network. Defaults to None.
+            last (bool, optional): if True perform backward for output layer, otherwise perform backward for hidden layer. Defaults to False.
 
         Returns:
-            _type_: _description_
+            np.array: layer array.
         """    
         if last == True:
             delta = self.d_act_function(self.z) * lossfunc(self.layer,self.target) 
@@ -133,9 +133,17 @@ class Layer:
         self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
         return self.layer
 
-    def update_weights(self, eta, lam = 0, alpha = 0, l1_reg = False, use_opt = 0, nest=False):
+    def update_weights(self, eta, lam = 0., alpha = 0., l1_reg = False, use_opt = 0, nest=False):
+        """ Update weight matrix and biases.
 
-        #print(f'eta:{eta}, lambda:{lam}, alpha:{alpha}, l1_reg:{l1_reg}, use_opt:{use_opt}, nest:{nest}')
+        Args:
+            eta (float): learning rate.
+            lam (float, optional): regularization parameter. Defaults to 0.
+            alpha (float, optional): momentum parameter. Defaults to 0.
+            l1_reg (bool, optional): if True use Lasso regularization, otherwise use Ridge regularization. Defaults to False.
+            use_opt (int, optional): if 1 use Adam optimizer. Defaults to 0.
+            nest (bool, optional): if True use Nesterov momentum approach, otherwise use normal momentum. Defaults to False.
+        """        
 
         if nest: 
             self.W = self.W_old
@@ -159,6 +167,11 @@ class Layer:
         self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt, nest)
 
     def nest_update(self, alpha):
+        """ Update weights following in Nesterov approach.
+
+        Args:
+            alpha (float): momentum parameter.
+        """        
         self.W_old = self.W
         self.b_old = self.b
         self.W = self.W + alpha * self.d_W_old
@@ -166,6 +179,8 @@ class Layer:
         self.prev_layer.nest_update(alpha)
 
     def reset_velocity(self):
+        """ Reset velocity of the layer.
+        """        
         self.d_W_old = 0
         self.d_b_old = 0
         self.prev_layer.reset_velocity()
@@ -173,34 +188,73 @@ class Layer:
 class Input(Layer):
 
     def __init__(self, input_dim):
+        """ Initialize Input layer object.
+
+        Args:
+            input_dim (int): number of input layer units.
+        """        
 
         Layer.__init__(self, None, input_dim, 'lin')
 
     def init_params(self, dim_layer, act_function, init_weights_mode):
+        """ Initialize input layer parameters.
+
+        Args:
+            dim_layer (int): number of input layer units.
+            act_function (func): not relevant for input layer.
+            init_weights_mode (str): not relevant for input layer.
+        """        
         self.layer = None
 
         self.dim_layer = dim_layer
 
     def forward(self, mode = 'train'):
+        """ Perform forward for input layer.
+
+        Args:
+            mode (str, optional): not relevant for input layer. Defaults to 'train'.
+
+        Returns:
+            np.array: input array.
+        """        
         return self.layer
     
     def backward(self, next_delta = None, next_weights = None):
+        """ Perform backward for input layer.
+
+        Args:
+            next_delta (np.array, optional): not relevant for input layer. Defaults to None.
+            next_weights (np.array, optional): not relevant for input layer. Defaults to None.
+
+        Returns:
+            np.array: input array.
+        """        
         
         return self.layer
     
     def update_weights(self, eta, lam=0, alpha=0,l1_reg=False,use_opt=0,nest=False):
+        """ Not relevant for input layer.
+        """        
         pass
     
     def reset_velocity(self):
+        """ Not relevant for input layer.
+        """     
         pass
 
     def nest_update(self, alpha):
+        """ Not relevant for input layer.
+        """     
         pass
 
     def get_weights(self, weights_dict, layer='hidden'):
+        """ Not relevant for input layer.
+        """             
         return []
         
     def set_weights(self, arr, i=0):
+        """ Not relevant for input layer.
+        """     
         return 0
 
         

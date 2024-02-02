@@ -11,8 +11,8 @@ if __name__ == '__main__':
     do_grid_search = True
     retraining_epochs = 500
 
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup11.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup11.pkl'
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup12.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup12.pkl'
     # DATASET ACQUISITION
     
     names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # HYPERPARAMETERS DICTONARY
     if do_grid_search:
         params = {
-              'eta' : [0.0003,0.0004],
+              'eta' : [0.008,0.01],
               'lam' : [0.00003,0.00001],
               'alpha':[0.9],
               'epochs': [500],
@@ -45,10 +45,10 @@ if __name__ == '__main__':
               'dim_hidden2' : [70],
               'hidden_act_func2' : ['tanh'],
 
-              'use_opt' : [0],
+              'use_opt' : [1],
               'loss' : ['MSE'],
-              'output_act_func' : ['lin']
-
+              'output_act_func' : ['lin'],
+              'nest': [True]
             }
         
         callbacks = {
@@ -63,26 +63,12 @@ if __name__ == '__main__':
 
     best_comb = load_dict_from_file(best_comb_filename)
 
-    best_comb = {'eta': 0.003,
-                 'lam': 0.00003,
-                 'alpha': 0.9,
-                 'epochs': 500,
-                 'n_batch': 150, 
-                 'dim_hidden': 70, 
-                 'hidden_act_func': 'tanh', 
-                 'dim_hidden2': 70, 
-                 'hidden_act_func2': 'tanh', 
-                 #'dim_hidden3': 70, 
-                 #'hidden_act_func3': 'tanh', 
-                 'use_opt': 0, 
-                 'loss': 'MSE', 
-                 'output_act_func': 'lin', 
-                 'nest':True
-                 }
     print(best_comb)
 
     #results = best_comb.pop('results')
     #elapsed_time = best_comb.pop('elapsed_time')
+
+    best_comb.pop('scale_eta_batchsize')
 
     if best_comb['n_batch'] == 'batch':
         best_comb['n_batch'] = X_train.shape[1]
