@@ -3,6 +3,16 @@ import numpy as np
 class Optimizer:
 
     def __init__(self, dim_layer, dim_prev_layer, eta=0.01, beta1=0.9, beta2=0.999, eps=1e-8):
+        """ Initialize Optimizer object.
+
+        Args:
+            dim_layer (int): number of units.
+            dim_prev_layer (Layer): previous layer.
+            eta (float, optional): learning rate. Defaults to 0.01.
+            beta1 (float, optional): parameter beta1. Defaults to 0.9.
+            beta2 (float, optional): parameter beta2. Defaults to 0.999.
+            eps (float, optional): parameter usefull to avoid dividing by zero. Defaults to 1e-8.
+        """        
         self.m_dw = np.zeros((dim_layer, dim_prev_layer))
         self.v_dw = np.zeros((dim_layer, dim_prev_layer))
         self.m_db = np.zeros((dim_layer,1))
@@ -16,9 +26,25 @@ class Optimizer:
         self.db_old = 0
 
     def update_eta(self,eta):
+        """ Update eta.
+
+        Args:
+            eta (float): learning rate.
+        """        
         self.eta = eta
 
     def update(self, w, b, dw, db):
+        """ Update weights.
+
+        Args:
+            w (np.array): weight matrix.
+            b (np.array): bias.
+            dw (np.array): delta of weights.
+            db (_type_): delta of biases.
+
+        Returns:
+            np.array, np.array: updated weights, updated bias.
+        """        
 
         self.m_dw = self.beta1 * self.m_dw + (1 - self.beta1) * dw
 
