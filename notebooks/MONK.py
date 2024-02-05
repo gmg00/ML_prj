@@ -7,13 +7,13 @@ from functions import accuracy, MSE
 
 if __name__ == '__main__':
     
-    do_grid_search = False
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb2.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid2.pkl'
+    do_grid_search = True
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb9.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid9.pkl'
     # DATASET ACQUISITION
     
-    df = get_data('/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/MONK/monks-1.train')
-    df_test = get_data('/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/MONK/monks-1.test')
+    df = get_data('/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/MONK/monks-3.train')
+    df_test = get_data('/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/MONK/monks-3.test')
 
     # Suddivisione TR/VL e TS (80% - 20%)
 
@@ -30,15 +30,19 @@ if __name__ == '__main__':
     # HYPERPARAMETERS DICTONARY
     if do_grid_search:
         params = {
-              'eta' : [0.005, 0.01, 0.05, 0.1, 0.5],
-              'lam' : [0.0, 0.1],
-              'alpha':[0.5, 0.9, 0.1],
+              'eta' : [0.1, 0.085, 0.09, 0.08, 0.95],
+              'lam' : [0.00003, 0.00001, 0.00008,0.000008,0.000005],
+              'alpha':[0.09, 0.5, 0.1, 0.9, 0.3],
               'epochs': [500],
-              'n_batch' : [1,31,'batch'],
-              'scale_eta_batchsize' : ['sqrt','lin',None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
+              'n_batch' : ['batch'],
+              'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
-              'dim_hidden' : [3,4],
-              'hidden_act_func' : ['relu', 'sigm']
+              'dim_hidden' : [4],
+              'hidden_act_func' : ['tanh'],
+              'l1_reg' : [True],
+              'nest' : [False, True],
+              'loss' : ['binary_crossentropy'],
+              'output_act_func' : ['sigm']
             }
         
         callbacks = {
