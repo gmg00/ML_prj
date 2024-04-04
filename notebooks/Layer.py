@@ -6,18 +6,6 @@ class Layer:
 
     def __init__(self, prev_layer, dim_layer, act_function, init_weights_mode='rand'):
 <<<<<<< HEAD
-  
-        self.prev_layer = prev_layer
-        self.init_params(dim_layer, act_function, init_weights_mode) #self.init_params(dim_layer, act_function, input)
-
-    def init_params(self, dim_layer, act_function, init_weights_mode):
-        #self.dim_batch = self.prev_layer.dim_batch
-        self.dim_layer = dim_layer
-        #self.W = np.random.uniform(-0.5, 0.5, (dim_layer, self.prev_layer.dim_layer))    #inizializzo la matrice dei pesi
-        #self.b = np.random.uniform(-0.5, 0.5, (dim_layer, 1))      #inizializzo il vettore dei bias
-        self.init_weights(init_weights_mode)
-        self.layer = None #np.empty((dim_layer, self.dim_batch))
-=======
         """ Initialize Layer object.
 
         Args:
@@ -44,7 +32,19 @@ class Layer:
         self.init_weights(init_weights_mode)
 
         self.layer = None 
->>>>>>> 3-optimization
+=======
+  
+        self.prev_layer = prev_layer
+        self.init_params(dim_layer, act_function, init_weights_mode) #self.init_params(dim_layer, act_function, input)
+
+    def init_params(self, dim_layer, act_function, init_weights_mode):
+        #self.dim_batch = self.prev_layer.dim_batch
+        self.dim_layer = dim_layer
+        #self.W = np.random.uniform(-0.5, 0.5, (dim_layer, self.prev_layer.dim_layer))    #inizializzo la matrice dei pesi
+        #self.b = np.random.uniform(-0.5, 0.5, (dim_layer, 1))      #inizializzo il vettore dei bias
+        self.init_weights(init_weights_mode)
+        self.layer = None #np.empty((dim_layer, self.dim_batch))
+>>>>>>> main
         self.z = None
         self.target = None
 
@@ -143,14 +143,6 @@ class Layer:
 
     def forward(self, mode = 'train'):
 <<<<<<< HEAD
-        """ Compute forward propagation for the current layer recursively.
-
-        Args:
-            mode (str, optional): if 'train' modify net and layer, if 'predict' leave them unchanged. Defaults to 'train'.
-
-        Returns:
-            np.array: current layer array.
-=======
         """ Compute forward propagation ricursively.
 
         Args:
@@ -158,7 +150,15 @@ class Layer:
 
         Returns:
             np.array: layer matrix.
->>>>>>> 3-optimization
+=======
+        """ Compute forward propagation for the current layer recursively.
+
+        Args:
+            mode (str, optional): if 'train' modify net and layer, if 'predict' leave them unchanged. Defaults to 'train'.
+
+        Returns:
+            np.array: current layer array.
+>>>>>>> main
         """        
     
         if mode == 'train':
@@ -205,16 +205,16 @@ class Layer:
         """        
 
 <<<<<<< HEAD
+        if nest: 
+            self.W = self.W_old
+            self.b = self.b_old
+=======
             self.d_W = delta.dot(self.prev_layer.backward_nest(delta,self.W_projected).T)
             self.d_b = delta.sum(axis=1).reshape((delta.shape[0],1))
             return self.layer_projected
 
     def update_weights(self, eta, lam, alpha, l1_reg = False, use_opt = 0, nest=False):
-=======
-        if nest: 
-            self.W = self.W_old
-            self.b = self.b_old
->>>>>>> 3-optimization
+>>>>>>> main
 
         if self.eta != eta:
             self.eta = eta
@@ -234,29 +234,29 @@ class Layer:
             self.b = self.b + self.d_b_old
 
 <<<<<<< HEAD
-        self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt)
-
-    def nest_update(self, alpha):
-        """ Update weights before computing gradient as in Nestorov approach.
-=======
         self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt, nest)
 
     def nest_update(self, alpha):
         """ Update weights following in Nesterov approach.
->>>>>>> 3-optimization
+=======
+        self.prev_layer.update_weights(eta, lam, alpha, l1_reg, use_opt)
+
+    def nest_update(self, alpha):
+        """ Update weights before computing gradient as in Nestorov approach.
+>>>>>>> main
 
         Args:
             alpha (float): momentum parameter.
         """        
 <<<<<<< HEAD
-        self.W_projected = self.W + alpha * self.d_W_old
-        self.b_projected = self.b + alpha * self.d_b_old
-=======
         self.W_old = self.W
         self.b_old = self.b
         self.W = self.W + alpha * self.d_W_old
         self.b = self.b + alpha * self.d_b_old
->>>>>>> 3-optimization
+=======
+        self.W_projected = self.W + alpha * self.d_W_old
+        self.b_projected = self.b + alpha * self.d_b_old
+>>>>>>> main
         self.prev_layer.nest_update(alpha)
 
     def reset_velocity(self):
@@ -279,7 +279,6 @@ class Input(Layer):
 
     def init_params(self, dim_layer, act_function, init_weights_mode):
 <<<<<<< HEAD
-=======
         """ Initialize input layer parameters.
 
         Args:
@@ -287,7 +286,8 @@ class Input(Layer):
             act_function (func): not relevant for input layer.
             init_weights_mode (str): not relevant for input layer.
         """        
->>>>>>> 3-optimization
+=======
+>>>>>>> main
         self.layer = None
 
         self.dim_layer = dim_layer
@@ -317,12 +317,12 @@ class Input(Layer):
         return self.layer
     
 <<<<<<< HEAD
-    def update_weights(self, eta, lam=0, alpha=0,l1_reg=False,use_opt=0):
-=======
     def update_weights(self, eta, lam=0, alpha=0,l1_reg=False,use_opt=0,nest=False):
         """ Not relevant for input layer.
         """        
->>>>>>> 3-optimization
+=======
+    def update_weights(self, eta, lam=0, alpha=0,l1_reg=False,use_opt=0):
+>>>>>>> main
         pass
     
     def reset_velocity(self):
@@ -346,6 +346,8 @@ class Input(Layer):
         return 0
 
 <<<<<<< HEAD
+        
+=======
         return self.layer
     
     def get_initial_weights(self, weights_dict, layer='hidden'):
@@ -353,6 +355,4 @@ class Input(Layer):
         
     def set_weights(self, arr, i=0):
         return 0
-=======
-        
->>>>>>> 3-optimization
+>>>>>>> main

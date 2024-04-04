@@ -10,16 +10,16 @@ if __name__ == '__main__':
     
     do_grid_search = True
 <<<<<<< HEAD
-    retraining_epochs = 1000
-
-    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup3.pkl'
-    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup3.pkl'
-=======
     retraining_epochs = 500
 
     best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup12.pkl'
     param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup12.pkl'
->>>>>>> 3-optimization
+=======
+    retraining_epochs = 1000
+
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup3.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup3.pkl'
+>>>>>>> main
     # DATASET ACQUISITION
     
     names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
@@ -41,42 +41,42 @@ if __name__ == '__main__':
     if do_grid_search:
         params = {
 <<<<<<< HEAD
-              'eta' : [0.009,0.007,0.005],
-              'lam' : [0.00001,0.01],
-              'alpha':[0.9,0.5],
-=======
               'eta' : [0.008,0.01],
               'lam' : [0.00003,0.00001],
               'alpha':[0.9],
->>>>>>> 3-optimization
+=======
+              'eta' : [0.009,0.007,0.005],
+              'lam' : [0.00001,0.01],
+              'alpha':[0.9,0.5],
+>>>>>>> main
               'epochs': [500],
               'n_batch' : [150],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
 <<<<<<< HEAD
+              'dim_hidden' : [70],
+              'hidden_act_func' : ['tanh'],
+              'dim_hidden2' : [70],
+              'hidden_act_func2' : ['tanh'],
+=======
               'dim_hidden' : [50],
               'hidden_act_func' : ['tanh'],
               'dim_hidden2' : [50],
               'hidden_act_func2' : ['tanh'],
               'dim_hidden3' : [50],
               'hidden_act_func3':['tanh'],
-=======
-              'dim_hidden' : [70],
-              'hidden_act_func' : ['tanh'],
-              'dim_hidden2' : [70],
-              'hidden_act_func2' : ['tanh'],
->>>>>>> 3-optimization
+>>>>>>> main
 
               'use_opt' : [1],
               'loss' : ['MSE'],
               'output_act_func' : ['lin'],
 <<<<<<< HEAD
+              'nest': [True]
+=======
               'nest' : [False,True],
               'l1_reg':[False]
 
-=======
-              'nest': [True]
->>>>>>> 3-optimization
+>>>>>>> main
             }
         
         callbacks = {

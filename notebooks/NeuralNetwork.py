@@ -19,11 +19,6 @@ class NeuralNetwork:
         self.metrics = metrics
 
 <<<<<<< HEAD
-    def get_initial_weights_list(self):
-        return self.output_layer.get_initial_weights()
-    
-    def set_initial_weights(self,weights_list):
-=======
     def get_weights_list(self):
         """ Get a list with weight matrices and biases of every layer in the network.
 
@@ -38,7 +33,12 @@ class NeuralNetwork:
         Args:
             weights_list (list): list with weight matrices and biases of every layer in the network.
         """        
->>>>>>> 3-optimization
+=======
+    def get_initial_weights_list(self):
+        return self.output_layer.get_initial_weights()
+    
+    def set_initial_weights(self,weights_list):
+>>>>>>> main
         self.output_layer.set_weights(weights_list)
 
     def predict(self,input):
@@ -220,8 +220,6 @@ class NeuralNetwork:
 
     def train(self, input, target, epochs, eta, lam, alpha, n_batch, validation_split = 0.5, validation_data = None, early_stopping = None, reduce_eta = None, verbose = 1, use_opt = 0, nest=False, l1_reg=False):
 <<<<<<< HEAD
-        
-=======
         """ Train the neural network.
 
         Args:
@@ -243,7 +241,9 @@ class NeuralNetwork:
         Returns:
             dict: training history.
         """        
->>>>>>> 3-optimization
+=======
+        
+>>>>>>> main
         # Checking conflicts between parameters:
         if n_batch > input.shape[1]:
             raise ValueError("n_batch can't be bigger than training set lenght.")
@@ -316,6 +316,14 @@ class NeuralNetwork:
                 self.output_layer.backward(lossfunc = self.d_lossfunc, last = True)
 
 <<<<<<< HEAD
+                # Permorf weights update.
+                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
+
+                # Update history dictionary with batch-level training loss and metrics information.
+                history = self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
+                # Update history dictionary with batch-level validation loss and metrics information.
+                history = self.update_history_batch(history, self.predict(val_input), val_target, 'val')
+=======
                 self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
 
                 self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
@@ -325,15 +333,7 @@ class NeuralNetwork:
             
             #if n_batch != input_new.shape[1]:
             #    self.output_layer.reset_velocity()
-=======
-                # Permorf weights update.
-                self.output_layer.update_weights(eta, lam, alpha, use_opt=use_opt, nest=nest, l1_reg=l1_reg)
-
-                # Update history dictionary with batch-level training loss and metrics information.
-                history = self.update_history_batch(history, self.output_layer.forward(), self.output_layer.target, 'train')
-                # Update history dictionary with batch-level validation loss and metrics information.
-                history = self.update_history_batch(history, self.predict(val_input), val_target, 'val')
->>>>>>> 3-optimization
+>>>>>>> main
                 
             # Update history dictionary with epoch-level information.
             history = self.update_history_epoch(history)
