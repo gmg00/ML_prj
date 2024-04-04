@@ -9,10 +9,17 @@ import pandas as pd
 if __name__ == '__main__':
     
     do_grid_search = True
+<<<<<<< HEAD
     retraining_epochs = 1000
 
     best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup3.pkl'
     param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup3.pkl'
+=======
+    retraining_epochs = 500
+
+    best_comb_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/best_comb_cup12.pkl'
+    param_grid_filename = '/mnt/c/Users/HP/Desktop/UNI/LM_1/MachineLearning/ML_prj/data/output/param_grid_cup12.pkl'
+>>>>>>> 3-optimization
     # DATASET ACQUISITION
     
     names = ['id', 'feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5', 'feature_6', 
@@ -33,26 +40,43 @@ if __name__ == '__main__':
     # HYPERPARAMETERS DICTONARY
     if do_grid_search:
         params = {
+<<<<<<< HEAD
               'eta' : [0.009,0.007,0.005],
               'lam' : [0.00001,0.01],
               'alpha':[0.9,0.5],
+=======
+              'eta' : [0.008,0.01],
+              'lam' : [0.00003,0.00001],
+              'alpha':[0.9],
+>>>>>>> 3-optimization
               'epochs': [500],
               'n_batch' : [150],
               'scale_eta_batchsize' : [None], #'sqrt' per eta * sqrt(n_batch), 'lin' per eta * n_batch
               
+<<<<<<< HEAD
               'dim_hidden' : [50],
               'hidden_act_func' : ['tanh'],
               'dim_hidden2' : [50],
               'hidden_act_func2' : ['tanh'],
               'dim_hidden3' : [50],
               'hidden_act_func3':['tanh'],
+=======
+              'dim_hidden' : [70],
+              'hidden_act_func' : ['tanh'],
+              'dim_hidden2' : [70],
+              'hidden_act_func2' : ['tanh'],
+>>>>>>> 3-optimization
 
-              'use_opt' : [0],
+              'use_opt' : [1],
               'loss' : ['MSE'],
               'output_act_func' : ['lin'],
+<<<<<<< HEAD
               'nest' : [False,True],
               'l1_reg':[False]
 
+=======
+              'nest': [True]
+>>>>>>> 3-optimization
             }
         
         callbacks = {
@@ -66,36 +90,17 @@ if __name__ == '__main__':
         save_dict_to_file(param_grid,param_grid_filename)
 
     best_comb = load_dict_from_file(best_comb_filename)
-    best_comb = {'dim_hidden': 30,
-        'hidden_act_func': 'leaky_relu',
-        'dim_hidden2': 30,
-        'hidden_act_func2': 'leaky_relu',
-        'dim_hidden3': 30,
-        'hidden_act_func3': 'leaky_relu',
-        'dim_hidden4': 30,
-        'hidden_act_func4': 'leaky_relu',
-        'eta': 0.003,
-        'lam': 0.06,
-        'alpha': 0.05,
-        'n_batch': 150,
-        'use_opt': 0,
-        'loss': 'MSE',
-        'output_act_func' : 'lin'
-        }
+
     print(best_comb)
 
     #results = best_comb.pop('results')
     #elapsed_time = best_comb.pop('elapsed_time')
 
+    best_comb.pop('scale_eta_batchsize')
+
     if best_comb['n_batch'] == 'batch':
         best_comb['n_batch'] = X_train.shape[1]
-    '''
-    if best_comb['scale_eta_batchsize'] == 'lin':
-        best_comb['eta'] = best_comb['eta'] * best_comb['n_batch']
-    if best_comb['scale_eta_batchsize'] == 'sqrt':
-        best_comb['eta'] = best_comb['eta'] * np.sqrt(best_comb['n_batch'])
-    best_comb.pop('scale_eta_batchsize')
-    '''
+
     best_comb['epochs'] = retraining_epochs
     
     input_layer = Input(X_train.shape[0])
@@ -135,6 +140,7 @@ if __name__ == '__main__':
     plt.legend(fontsize=15)
 
     plt.show()
+    
 
     # (Grid Search sui callback) -> MONK_exploration
 
